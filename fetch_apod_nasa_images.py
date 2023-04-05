@@ -1,5 +1,6 @@
 import requests
 import os
+import argparse
 from urllib.parse import urlparse, unquote
 from dotenv import load_dotenv
 from download_folder import create_folder
@@ -10,7 +11,7 @@ def get_urls_nasa_pictures():
     url = "https://api.nasa.gov/planetary/apod"
     params = {
         "api_key": f"{token}",
-        "count": 5
+        "count": count_of_photos
     }
     response = requests.get(url, params=params)
     response.raise_for_status()
@@ -45,10 +46,24 @@ def fetch_apod_nasa_pictures():
             file.write(requests.get(photo[0]).content)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Скачиваем фотографии дня с сайта NASA"
+    )
+    parser.add_argument("count", type=int,
+                        help="Введите количество фото для закачки, "
+                             "иначе закачаю 5 фотографий",
+                        default=5, nargs="?", const=1,
+                        metavar="Целое число")
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == "__main__":
     load_dotenv()
     token = os.getenv('NASA_TOKEN')
     create_folder()
+    count_of_photos = parse_args().count
     get_urls_nasa_pictures()
     urls_with_pictures = get_urls_nasa_pictures()
     get_extension_from_file()
