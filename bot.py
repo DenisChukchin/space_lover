@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 import telegram
 
 
-def send_message():
-    bot.send_message(chat_id=chat_id, text='Hi John!')
+def send_document():
+    bot.send_document(chat_id=chat_id, document=open("Images/spacex_2.jpg", "rb"))
 
 
 if __name__ == "__main__":
@@ -12,7 +12,4 @@ if __name__ == "__main__":
     token = os.getenv('TELEGRAM_TOKEN')
     chat_id = os.getenv('TELEGRAM_CHAT_ID')
     bot = telegram.Bot(token)
-    send_message()
-    print(bot.get_me())
-    updates = bot.get_updates()
-    print(updates[0])
+    send_document()
