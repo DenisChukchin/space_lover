@@ -17,14 +17,14 @@ Install Python3 latest version. Install PyCharm IDE, if you need it.
 ```bash
 % pip install -r requirements.txt
 ```
->*For permanent set, create .env file and add variables in this format:
+> For permanent set, create .env file and add variables in this format:
 ```python
 NASA_TOKEN = "YOUR_TOKEN"
 TELEGRAM_TOKEN = "YOUR_TOKEN"
 TELEGRAM_CHAT_ID = int(YOUR_ID)
 BOT_TIMER = 5
 ```
-__BOT_TIMER__ -  Telegram bot sends picture after a set amount of time.
+__BOT_TIMER__ - Time between sending messages with photos.
 The variable is specified in seconds.
 ## Scripts.
 ### __fetch_spacex_images.py__
@@ -33,7 +33,7 @@ Uploads photos from the launch specified by the user. The photos will be saved t
 ``` bash
 % python3 fetch_spacex_images.py 88  
 ```
-> If you don't know the launch number, then run the script without specifying the launch number. The script will upload photos of the last shuttle launch by default.
+> If you don't know the launch number, then run the script without it. The script will upload photos of the last shuttle launch by default.
 ``` bash
 % python3 fetch_spacex_images.py
 ```
@@ -82,7 +82,7 @@ This script allows the chatbot to send a photo that the user specifies.
 ``` bash
 % python3 manual_bot.py
 ```
-## __auto_bot.py__
+### __auto_bot.py__
 The script allows the chatbot to send all the photos __one by one__ after a certain time in an infinite loop.
 > If you haven't set environment variables, then for a quick test run, export your private "Telegram token" and "TELEGRAM_CHAT_ID" by this commands:
 ``` bash
@@ -91,7 +91,7 @@ The script allows the chatbot to send all the photos __one by one__ after a cert
 ```
 > Example: Let's send a photo every 10 seconds.
 ``` bash
-% % python3 auto_bot.py 10    
+% python3 auto_bot.py 10    
 ```
 > The default value is 4 hours (14400 seconds). Activate by this command.
 ``` bash
@@ -101,5 +101,5 @@ The script allows the chatbot to send all the photos __one by one__ after a cert
 ``` bash
 % python3 auto_bot.py -my_time
 ```
-## Project goal.
+## Project goals.
 *The program was designed by a student from online web development courses for educational purposes [Devman](https://dvmn.org).*
