@@ -4,6 +4,7 @@ from download_folder import create_folder
 
 
 def fetch_spacex_last_launch():
+    """Скачиваем фото с запуска шатла"""
     base_url = f"https://api.spacexdata.com/v3/launches/{flight_number}"
     response = requests.get(base_url)
     response.raise_for_status()
