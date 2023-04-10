@@ -3,10 +3,9 @@ import os
 import argparse
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from download_folder import create_folder
 
 
-def epic_nasa_pictures():
+def fetch_epic_nasa_pictures(token, photo_count):
     """Скачиваем фотографии Земли сделанные 2 дня назад"""
     two_days_ago = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d")
     url = f"https://api.nasa.gov/EPIC/api/natural/date/{two_days_ago}"
@@ -16,15 +15,17 @@ def epic_nasa_pictures():
     response = requests.get(url, params=params)
     response.raise_for_status()
     photos = response.json()
-    for number, photo in enumerate(photos[:count_of_photos]):
+    for number, photo in enumerate(photos[:photo_count]):
         days_ago = (datetime.now() - timedelta(days=2)).strftime("%Y/%m/%d")
         photo_url = ("""https://api.nasa.gov/EPIC/archive/natural/"""
                      f"""{days_ago}/png/{photo.get("image")}"""
-                     f""".png?api_key={token}""")
-        generate_name = ["epic_planet_", str(number), ".png"]
-        filename = "".join(generate_name)
+                     f""".png""")
+        name_template = ["epic_planet_", str(number), ".png"]
+        filename = "".join(name_template)
+        photo_response = requests.get(photo_url, params=params)
+        photo_response.raise_for_status()
         with open("Images/{}".format(filename), 'wb') as file:
-            file.write(requests.get(photo_url).content)
+            file.write(requests.get(photo_url, params=params).content)
 
 
 def parse_args():
@@ -43,9 +44,16 @@ def parse_args():
     return args
 
 
-if __name__ == "__main__":
+def main():
     load_dotenv()
     token = os.getenv('NASA_TOKEN')
-    create_folder()
-    count_of_photos = parse_args().count
-    epic_nasa_pictures()
+    os.makedirs("Images", exist_ok=True)
+    photo_count = parse_args().count
+    try:
+        fetch_epic_nasa_pictures(token, photo_count)
+    except requests.exceptions.HTTPError as error:
+        print(error)
+
+
+if __name__ == "__main__":
+    main()

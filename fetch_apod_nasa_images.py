@@ -3,47 +3,42 @@ import os
 import argparse
 from urllib.parse import urlparse, unquote
 from dotenv import load_dotenv
-from download_folder import create_folder
 
 
-def get_urls_nasa_pictures():
+def get_urls_nasa_pictures(token, photo_count):
     """Получаем ссылки на фотографии дня с сайта NASA"""
     url = "https://api.nasa.gov/planetary/apod"
     params = {
         "api_key": f"{token}",
-        "count": count_of_photos
+        "count": photo_count
     }
     response = requests.get(url, params=params)
     response.raise_for_status()
-    get_photos = response.json()
+    photos = response.json()
     pictures = []
-    for photos in get_photos:
-        picture = photos.get("url")
+    for photo in photos:
+        picture = photo.get("url")
         if picture.startswith("https://apod.nasa.gov"):
             pictures.append(picture)
-        elif picture.endswith(".html"):
-            pass
     return pictures
 
 
-def get_extension_from_file():
-    """Получаем расширение фотографий"""
-    extensions = []
-    for picture in urls_with_pictures:
-        encode_link = unquote(picture, encoding="utf-8", errors="replace")
-        chopped_link = urlparse(encode_link)
-        extensions.append(os.path.splitext(chopped_link.path)[1])
-    return extensions
+def get_extension_from_file(url):
+    """Получаем расширение фото из ссылки"""
+    encode_link = unquote(url, encoding="utf-8", errors="replace")
+    chopped_link = urlparse(encode_link)
+    return os.path.splitext(chopped_link.path)[1]
 
 
-def fetch_apod_nasa_pictures():
+def fetch_apod_nasa_pictures(urls_with_pictures):
     """Скачиваем фотографии дня с сайта NASA"""
-    photos_with_extense = list(zip(urls_with_pictures, extense))
-    for number, photo in enumerate(photos_with_extense):
-        generate_name = ["nasa_apod_", str(number), photo[1]]
-        filename = "".join(generate_name)
+    for number, photo in enumerate(urls_with_pictures):
+        name_template = ["nasa_apod_", str(number), get_extension_from_file(photo)]
+        filename = "".join(name_template)
+        photo_response = requests.get(photo)
+        photo_response.raise_for_status()
         with open("Images/{}".format(filename), 'wb') as file:
-            file.write(requests.get(photo[0]).content)
+            file.write(requests.get(photo).content)
 
 
 def parse_args():
@@ -59,13 +54,17 @@ def parse_args():
     return args
 
 
-if __name__ == "__main__":
+def main():
     load_dotenv()
     token = os.getenv('NASA_TOKEN')
-    create_folder()
-    count_of_photos = parse_args().count
-    get_urls_nasa_pictures()
-    urls_with_pictures = get_urls_nasa_pictures()
-    get_extension_from_file()
-    extense = get_extension_from_file()
-    fetch_apod_nasa_pictures()
+    os.makedirs("Images", exist_ok=True)
+    photo_count = parse_args().count
+    try:
+        urls_with_pictures = get_urls_nasa_pictures(token, photo_count)
+        fetch_apod_nasa_pictures(urls_with_pictures)
+    except requests.exceptions.HTTPError as error:
+        print(error)
+
+
+if __name__ == "__main__":
+    main()

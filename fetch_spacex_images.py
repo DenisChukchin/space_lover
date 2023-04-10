@@ -1,17 +1,19 @@
 import argparse
 import requests
-from download_folder import create_folder
+import os
 
 
-def fetch_spacex_last_launch():
+def fetch_spacex_last_launch(flight_number):
     """Скачиваем фото с запуска шатла"""
     base_url = f"https://api.spacexdata.com/v3/launches/{flight_number}"
     response = requests.get(base_url)
     response.raise_for_status()
     urls_with_photos = response.json()["links"]["flickr_images"]
     for number, photo in enumerate(urls_with_photos):
-        generate_name = ["spacex_", str(number), ".jpg"]
-        filename = "".join(generate_name)
+        name_template = ["spacex_", str(number), ".jpg"]
+        filename = "".join(name_template)
+        photo_response = requests.get(photo)
+        photo_response.raise_for_status()
         with open("Images/{}".format(filename), 'wb') as file:
             file.write(requests.get(photo).content)
 
@@ -31,7 +33,16 @@ def parse_args():
     return args
 
 
-if __name__ == "__main__":
-    create_folder()
+def main():
+    os.makedirs("Images", exist_ok=True)
     flight_number = parse_args().flight_number
-    fetch_spacex_last_launch()
+    try:
+        fetch_spacex_last_launch(flight_number)
+        print("Если запрос прошел, а фотографии не загрузились "
+              "- значит фотографии с этим запуском шатла отсутвуют на сайте!")
+    except requests.exceptions.HTTPError as error:
+        print(error, "\nТакой страницы не существует, попробуй другой запуск.")
+
+
+if __name__ == "__main__":
+    main()

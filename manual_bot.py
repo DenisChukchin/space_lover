@@ -5,11 +5,6 @@ from dotenv import load_dotenv
 import telegram
 
 
-def send_random_photo():
-    bot.send_document(chat_id=chat_id,
-                      document=open(f"Images/{random_picture}", "rb"))
-
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Отправляем одно случайное фото по названию файла, "
@@ -26,13 +21,18 @@ def parse_args():
     return args
 
 
-if __name__ == "__main__":
+def main():
     load_dotenv()
     token = os.getenv('TELEGRAM_TOKEN')
     chat_id = os.getenv('TELEGRAM_CHAT_ID')
     bot = telegram.Bot(token)
     random_picture = parse_args().picture
     try:
-        send_random_photo()
+        with open(f"Images/{random_picture}", "rb") as file:
+            bot.send_document(chat_id=chat_id, document=file)
     except FileNotFoundError:
-        print("Не существует такого файла, попробуй снова")
+        print("Не существует такого файла, попробуй снова.")
+
+
+if __name__ == "__main__":
+    main()
