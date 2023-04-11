@@ -38,7 +38,7 @@ def fetch_apod_nasa_pictures(urls_with_pictures):
         photo_response = requests.get(photo)
         photo_response.raise_for_status()
         with open("Images/{}".format(filename), 'wb') as file:
-            file.write(requests.get(photo).content)
+            file.write(photo_response.content)
 
 
 def parse_args():

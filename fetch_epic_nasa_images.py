@@ -25,7 +25,7 @@ def fetch_epic_nasa_pictures(token, photo_count):
         photo_response = requests.get(photo_url, params=params)
         photo_response.raise_for_status()
         with open("Images/{}".format(filename), 'wb') as file:
-            file.write(requests.get(photo_url, params=params).content)
+            file.write(photo_response.content)
 
 
 def parse_args():
