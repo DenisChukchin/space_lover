@@ -99,7 +99,7 @@ The script allows the chatbot to send all the photos __one by one__ after a cert
 ```
 > If you want to use an environment variable, use the following command.
 ``` bash
-% python3 auto_bot.py -my_time
+% python3 auto_bot.py -user_timer
 ```
 ## Project goals.
 *The program was designed by a student from online web development courses for educational purposes [Devman](https://dvmn.org).*
