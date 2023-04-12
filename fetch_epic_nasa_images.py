@@ -3,6 +3,7 @@ import os
 import argparse
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from download_function import download_photo
 
 
 def fetch_epic_nasa_pictures(token, photo_count):
@@ -22,10 +23,7 @@ def fetch_epic_nasa_pictures(token, photo_count):
                      f""".png""")
         name_template = ["epic_planet_", str(number), ".png"]
         filename = "".join(name_template)
-        photo_response = requests.get(photo_url, params=params)
-        photo_response.raise_for_status()
-        with open("Images/{}".format(filename), 'wb') as file:
-            file.write(photo_response.content)
+        download_photo(photo_url, filename, params)
 
 
 def parse_args():
@@ -47,7 +45,6 @@ def parse_args():
 def main():
     load_dotenv()
     token = os.getenv('NASA_TOKEN')
-    os.makedirs("Images", exist_ok=True)
     photo_count = parse_args().count
     try:
         fetch_epic_nasa_pictures(token, photo_count)

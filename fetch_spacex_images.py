@@ -1,6 +1,6 @@
 import argparse
 import requests
-import os
+from download_function import download_photo
 
 
 def fetch_spacex_last_launch(flight_number):
@@ -12,10 +12,7 @@ def fetch_spacex_last_launch(flight_number):
     for number, photo in enumerate(urls_with_photos):
         name_template = ["spacex_", str(number), ".jpg"]
         filename = "".join(name_template)
-        photo_response = requests.get(photo)
-        photo_response.raise_for_status()
-        with open("Images/{}".format(filename), 'wb') as file:
-            file.write(photo_response.content)
+        download_photo(photo, filename)
 
 
 def parse_args():
@@ -34,7 +31,6 @@ def parse_args():
 
 
 def main():
-    os.makedirs("Images", exist_ok=True)
     flight_number = parse_args().flight_number
     try:
         fetch_spacex_last_launch(flight_number)

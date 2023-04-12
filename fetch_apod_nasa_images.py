@@ -3,6 +3,7 @@ import os
 import argparse
 from urllib.parse import urlparse, unquote
 from dotenv import load_dotenv
+from download_function import download_photo
 
 
 def get_urls_nasa_pictures(token, photo_count):
@@ -35,10 +36,7 @@ def fetch_apod_nasa_pictures(urls_with_pictures):
     for number, photo in enumerate(urls_with_pictures):
         name_template = ["nasa_apod_", str(number), get_extension_from_file(photo)]
         filename = "".join(name_template)
-        photo_response = requests.get(photo)
-        photo_response.raise_for_status()
-        with open("Images/{}".format(filename), 'wb') as file:
-            file.write(photo_response.content)
+        download_photo(photo, filename)
 
 
 def parse_args():
@@ -57,7 +55,6 @@ def parse_args():
 def main():
     load_dotenv()
     token = os.getenv('NASA_TOKEN')
-    os.makedirs("Images", exist_ok=True)
     photo_count = parse_args().count
     try:
         urls_with_pictures = get_urls_nasa_pictures(token, photo_count)
